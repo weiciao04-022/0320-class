@@ -91,8 +91,8 @@
 </head>
 <body>
 
-    <!-- 全螢幕動態背景 -->
-    <img id="global-bg" src="./pic/bg-main.jpg" alt="背景故事" class="bg-zoom">
+    <!-- 全螢幕動態背景 - 改為 start.png -->
+    <img id="global-bg" src="./pic/start.png" alt="背景故事" class="bg-zoom">
 
     <!-- 頂部狀態列 -->
     <div id="status-bar" class="fixed top-0 left-0 w-full p-4 bg-black/40 backdrop-blur-md z-[100] border-b border-white/10 hidden">
@@ -166,7 +166,6 @@
 
         <!-- 遊戲核心區段 -->
         <section id="game" class="stage">
-            <!-- 上方透明文字區 -->
             <div class="glass-panel space-y-6 relative">
                 <div class="flex justify-between items-start border-b border-white/10 pb-4 mb-2">
                     <div class="space-y-1">
@@ -176,7 +175,6 @@
                 
                 <p id="scen-desc" class="text-base text-neutral-200 font-light leading-relaxed"></p>
 
-                <!-- 選項區塊，現在會立即淡入 -->
                 <div id="game-content" class="opacity-0 transition-opacity duration-1000 space-y-3">
                     <div id="scen-options" class="space-y-3"></div>
                 </div>
@@ -301,13 +299,11 @@
 
             state.isLocked = false;
             const content = document.getElementById('game-content');
-            
-            // 讓內容先透明化以進行切換動畫
             content.style.opacity = '0';
             
-            // 切換全螢幕背景
+            // 切換全螢幕背景 - 副檔名改為 png
             const sceneNum = state.currentIdx + 1;
-            const imagePath = `./pic/scene${sceneNum}.jpg`;
+            const imagePath = `./pic/scene${sceneNum}.png`;
             
             bgImg.style.opacity = '0';
             setTimeout(() => {
@@ -315,13 +311,11 @@
                 bgImg.style.opacity = '1';
                 bgImg.classList.add('bg-zoom');
                 
-                // 背景切換後立刻淡入文字內容與選項
                 setTimeout(() => {
                     content.style.opacity = '1';
                 }, 300);
             }, 500);
 
-            // 更新介面文字
             document.getElementById('scen-title').innerText = sc.title;
             document.getElementById('scen-desc').innerText = sc.desc;
             
@@ -339,8 +333,6 @@
         function handleChoice(idx) {
             if (state.isLocked) return;
             const opt = scenarios[state.currentIdx].options[idx];
-            
-            // 鎖定防止重複點擊
             state.isLocked = true;
 
             state.patient = Math.min(100, Math.max(0, state.patient + opt.impact.patient));
@@ -379,7 +371,7 @@
             document.getElementById('ending-title').innerText = "漫長告別的開始";
             document.getElementById('ending-desc').innerHTML = `
                 <p>五個抉擇，僅是家屬生活中的幾秒鐘。</p>
-                <p>面對無法痊癒的疾病，我們需要的可能不只是選擇，<br>而是更多的理解與支持。</p>
+                <p>面對無法痊癒的疾病，我們需要的可能不只是選擇，<br>恢復尊嚴與支持。</p>
             `;
         }
     </script>
