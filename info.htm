@@ -18,6 +18,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            padding: 2rem 0;
         }
         .serif { font-family: 'Noto Serif TC', serif; }
         .glass-panel {
@@ -29,28 +30,59 @@
             padding: 3rem 2rem;
             box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8);
             width: 100%;
-            max-width: 28rem;
-            text-align: center;
+            max-width: 32rem;
+        }
+        .info-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-left: 3px solid #3b82f6;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 0 0.5rem 0.5rem 0;
         }
     </style>
 </head>
 <body>
 
-    <main class="px-6">
-        <div class="glass-panel space-y-6">
-            <h1 class="serif text-2xl text-white font-bold tracking-wider">這是一篇關於失智症的資訊頁面</h1>
-            <p class="text-neutral-400 font-light tracking-widest uppercase text-xs">This is info page</p>
+    <main class="px-6 w-full flex justify-center">
+        <div class="glass-panel space-y-8">
+            <header class="text-center space-y-2">
+                <h1 class="serif text-3xl text-white font-bold tracking-wider">了解年輕型失智症</h1>
+                <p class="text-neutral-500 font-light tracking-[0.3em] uppercase text-[10px]">Information & Resources</p>
+            </header>
             
-            <div class="h-px bg-white/10 w-full my-8"></div>
-            
-            <p class="text-neutral-300 leading-relaxed">
-                這裡可以放置更多關於年輕型失智症的醫學定義、求助管道或是照護資源。
-            </p>
+            <div class="space-y-6">
+                <section class="info-card">
+                    <h2 class="text-blue-400 font-bold mb-2">什麼是年輕型失智症？</h2>
+                    <p class="text-sm text-neutral-300 leading-relaxed text-justify">
+                        指 65 歲以下發病的失智症。與老年型不同，患者多處於職場巔峰或家庭經濟支柱，面臨更嚴峻的社會與心理挑戰。
+                    </p>
+                </section>
 
-            <!-- 這裡也同步改為 index.htm 以對應你 GitHub 上的 index.htm -->
-            <a href="index.htm" class="inline-block mt-8 text-neutral-500 hover:text-white transition-colors text-xs tracking-widest uppercase">
-                ← 返回體驗
-            </a>
+                <section class="info-card" style="border-left-color: #ef4444;">
+                    <h2 class="text-red-400 font-bold mb-2">常見警訊</h2>
+                    <ul class="text-sm text-neutral-300 space-y-1 list-disc list-inside">
+                        <li>記憶力減退影響工作</li>
+                        <li>對原本熟悉的工具感到陌生</li>
+                        <li>情緒或人格出現極端轉變</li>
+                        <li>喪失對時間與空間的定向感</li>
+                    </ul>
+                </section>
+
+                <section class="info-card" style="border-left-color: #10b981;">
+                    <h2 class="text-emerald-400 font-bold mb-2">尋求協助</h2>
+                    <p class="text-sm text-neutral-300 leading-relaxed">
+                        失智症關懷專線：<span class="text-white font-mono">0800-474-580</span><br>
+                        (服務時間：週一至週五 9:00 - 21:00)
+                    </p>
+                </section>
+            </div>
+
+            <footer class="text-center pt-4">
+                <!-- 相對路徑跳轉，確保在 GitHub Repository 子目錄下運作 -->
+                <a href="index.htm" class="inline-block px-8 py-3 border border-white/10 text-neutral-400 hover:text-white hover:bg-white/5 transition-all text-xs tracking-[0.4em] uppercase rounded-full">
+                    ← 返回體驗首頁
+                </a>
+            </footer>
         </div>
     </main>
 
