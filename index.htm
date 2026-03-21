@@ -128,7 +128,7 @@
             
             <div class="video-box aspect-video w-full rounded">
                 <video class="main-video" autoplay muted loop playsinline>
-                    <source src="pic/start.mp4" type="video/mp4">
+                    <source src="./pic/start.mp4" type="video/mp4">
                 </video>
             </div>
 
@@ -308,26 +308,41 @@
             const video = document.getElementById('game-video');
             const timerTxt = document.getElementById('timer-text');
             
+            // 狀態初始化
             content.style.opacity = '0';
             freeze.style.opacity = '0';
             
-            const sceneNum = state.currentIdx + 1;
-            
-            // 設定影片路徑
-            video.src = "pic/scene" + sceneNum + ".mp4";
-            freeze.src = "pic/scene" + sceneNum + "_freeze.jpg";
-            
-            // 嘗試播放，若失敗則直接進入選項
+            // 暫停目前影片並清空路徑，確保重新加載
+            video.pause();
+            video.removeAttribute('src');
             video.load();
-            const playPromise = video.play();
-            
-            if (playPromise !== undefined) {
-                playPromise.catch(error => {
-                    console.log("影片播放失敗或不存在，直接顯示內容");
+
+            const sceneNum = state.currentIdx + 1;
+            const videoPath = `./pic/scene${sceneNum}.mp4`;
+            const freezePath = `./pic/scene${sceneNum}_freeze.jpg`;
+
+            // 設定封面
+            freeze.src = freezePath;
+
+            // 影片加載成功事件
+            video.onloadeddata = () => {
+                video.play().catch(e => {
+                    console.warn('播放被阻擋:', e);
                     endScenarioIntro();
                 });
-            }
+            };
 
+            // 影片加載錯誤處理 (備援)
+            video.onerror = () => {
+                console.error('影片加載失敗:', videoPath);
+                endScenarioIntro();
+            };
+
+            // 開始加載影片
+            video.src = videoPath;
+            video.load();
+
+            // 更新介面文字
             document.getElementById('scen-title').innerText = sc.title;
             document.getElementById('scen-desc').innerText = sc.desc;
             
@@ -341,6 +356,7 @@
                 optBox.appendChild(b);
             });
 
+            // 計時器邏輯
             let timeLeft = 5;
             timerTxt.innerText = "00:0" + timeLeft;
             
