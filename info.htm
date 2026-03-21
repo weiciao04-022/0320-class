@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>相關資訊 - 年輕型失智症</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Noto+Serif+TC:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: #000000;
+            color: #f5f5f5;
+            font-family: 'Noto Sans TC', sans-serif;
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .serif { font-family: 'Noto Serif TC', serif; }
+        .glass-panel {
+            background: rgba(10, 10, 10, 0.7);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1.5rem;
+            padding: 3rem 2rem;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8);
+            width: 100%;
+            max-width: 28rem;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <main class="px-6">
+        <div class="glass-panel space-y-6">
+            <h1 class="serif text-2xl text-white font-bold tracking-wider">這是一篇關於失智症的資訊頁面</h1>
+            <p class="text-neutral-400 font-light tracking-widest uppercase text-xs">This is info page</p>
+            
+            <div class="h-px bg-white/10 w-full my-8"></div>
+            
+            <p class="text-neutral-300 leading-relaxed">
+                這裡可以放置更多關於年輕型失智症的醫學定義、求助管道或是照護資源。
+            </p>
+
+            <a href="index.html" class="inline-block mt-8 text-neutral-500 hover:text-white transition-colors text-xs tracking-widest uppercase">
+                ← 返回體驗
+            </a>
+        </div>
+    </main>
+
+</body>
+</html>
