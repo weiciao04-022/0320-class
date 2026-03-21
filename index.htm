@@ -19,7 +19,7 @@
         }
         .serif { font-family: 'Noto Serif TC', serif; }
         
-        /* 背景容器：雙影片緩衝 */
+        /* 背景容器：圖片切換 */
         #bg-container {
             position: fixed;
             inset: 0;
@@ -30,22 +30,19 @@
             background: #000;
         }
 
-        .bg-video {
+        .bg-image {
             position: absolute;
             top: 50%;
             left: 50%;
-            min-width: 100%;
-            min-height: 100%;
-            width: auto;
-            height: auto;
-            transform: translate(-50%, -50%);
+            width: 100%;
+            height: 100%;
             object-fit: cover;
+            transform: translate(-50%, -50%);
             filter: brightness(0.4);
-            transition: opacity 1.2s ease-in-out;
+            transition: opacity 1.5s ease-in-out;
             opacity: 0;
-            pointer-events: none; /* 避免干擾點擊 */
         }
-        .bg-video.active {
+        .bg-image.active {
             opacity: 1;
         }
 
@@ -55,7 +52,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* 數值條 */
         .value-bar { 
             transition: width 0.7s cubic-bezier(0.4, 0, 0.2, 1); 
             height: 100%;
@@ -96,12 +92,12 @@
         }
     </style>
 </head>
-<body onclick="enableAudioOnFirstClick()">
+<body>
 
-    <!-- 背景容器：使用兩個 Video 標籤來實現無縫切換 -->
+    <!-- 背景容器：使用兩個 Image 標籤實現淡入淡出切換 -->
     <div id="bg-container">
-        <video id="video-a" class="bg-video active" muted loop playsinline></video>
-        <video id="video-b" class="bg-video" muted loop playsinline></video>
+        <img id="bg-img-a" class="bg-image active" alt="背景 A">
+        <img id="bg-img-b" class="bg-image" alt="背景 B">
     </div>
 
     <!-- 頂部狀態列 -->
@@ -225,8 +221,7 @@
             burden: 80,
             currentIdx: 0,
             isLocked: false,
-            activeVideoId: 'video-a',
-            userInteracted: false
+            activeImgId: 'bg-img-a'
         };
 
         const scenarios = [
@@ -240,6 +235,24 @@
                 ]
             },
             {
+                title: '老友聚會',
+                desc: '以前的死黨邀你參加同學會。你很想去，但他現在情緒極度不穩，只要你不在身邊就會恐慌大哭。',
+                options: [
+                    { text: '帶著他一起參加。希望能讓他多接觸人群。', impact: { patient: -5, dignity: -15, burden: -20 }, feedback: '他在餐廳因吵雜而尖叫，老友們雖然安慰你，但眼神中卻充滿了憐憫與不安。' },
+                    { text: '拒絕邀請，留在家陪他。', impact: { patient: 10, dignity: 5, burden: -10 }, feedback: '他在你的陪伴下很平穩，但你看著群組裡熱鬧的照片，感到自己正被世界遺棄。' },
+                    { text: '雇請臨時看護兩小時，自己偷偷跑去喝杯咖啡。', impact: { patient: -10, dignity: 0, burden: 20 }, feedback: '那一小段自由讓你重新活過來，但一踏進家門，面對看護的抱怨與他的哭鬧，壓力變倍增。' }
+                ]
+            },
+            {
+                title: '迷失的瞬間',
+                desc: '一轉頭，他趁你曬衣服時推開沒鎖好的門走失了。三小時後警察在火車站發現他，他正對著路人說要去找已經過世的母親。',
+                options: [
+                    { text: '緊緊抱住他，什麼都不責備，只說「回來就好」。', impact: { patient: 15, dignity: 10, burden: -10 }, feedback: '他像個孩子般大哭。但你意識到，你必須把家裡變成一座更堅固的監牢。' },
+                    { text: '幫他掛上「防走失手鍊」，上面刻著你的電話與「我有失智症」。', impact: { patient: 0, dignity: -25, burden: 10 }, feedback: '安全性提升了，但看著那條手鍊，你覺得那是他在社會中尊嚴的墓碑。' },
+                    { text: '強制他在家時必須待在有圍欄的房間。', impact: { patient: -20, dignity: -30, burden: 15 }, feedback: '雖然再也不會走失，但他在圍欄內憤怒地搥門，讓你的心碎了一地。' }
+                ]
+            },
+            {
                 title: '應徵工作',
                 desc: '他不到四十歲，堅持「我還能上班」。你去幫他接洽熟識的店鋪嘗試簡易工作，但老闆得知病況後婉拒了。',
                 options: [
@@ -249,21 +262,12 @@
                 ]
             },
             {
-                title: '超市失控',
-                desc: '超市排隊時，他突然因為找不到錢包而恐慌尖叫，甚至推倒了前方的路人。路人憤怒地要求報警。',
+                title: '清晨的混亂',
+                desc: '凌晨三點，他突然穿好西裝站在床頭，大喊著要遲到了。他試圖推開窗戶「抄近路」去上班，情況非常危險。',
                 options: [
-                    { text: '不斷鞠躬致歉，並大聲解釋「他生病了，他不是故意的」。', impact: { patient: 0, dignity: -30, burden: -10 }, feedback: '人群散去，但他聽到你說他生病，臉上滿是羞愧。' },
-                    { text: '私下賠償路人損失，並迅速帶他離開現場。', impact: { patient: 5, dignity: 5, burden: -15 }, feedback: '保住了場面，但你的口袋與意志力都因此縮水。' },
-                    { text: '當場跟他一起情緒崩潰，對路人大喊「你懂什麼！」。', impact: { patient: -10, dignity: -10, burden: 15 }, feedback: '雖然一時發洩，但場面失控，你們最後被帶進警局處理。' }
-                ]
-            },
-            {
-                title: '申請補助',
-                desc: '鑑定結果卻因為他「身體功能強健」而不符失能補助。所有的重擔，只能由家庭承擔。',
-                options: [
-                    { text: '花錢請律師與專家，準備漫長的上訴與複查程序。', impact: { patient: 0, dignity: 0, burden: -30 }, feedback: '這是一場法律馬拉松，在拿到錢之前，你可能先垮掉。' },
-                    { text: '放棄補助，兼職更多工作來支付昂貴的日間照護費。', impact: { patient: 10, dignity: 5, burden: -25 }, feedback: '他獲得了照顧，但你已經連續三個月每天睡不到四小時。' },
-                    { text: '減少照護開銷，將他關在家中，並安裝遠端攝影機監控。', impact: { patient: -20, dignity: -20, burden: 10 }, feedback: '經濟省下了，但他在監控畫面中孤獨轉圈的模樣，讓你心如刀割。' }
+                    { text: '跟他玩一場戲：穿上外衣，帶他在樓下繞一圈再回房間。', impact: { patient: 15, dignity: 5, burden: -25 }, feedback: '他終於願意上床睡覺。但隔天你要上班時，大腦像塞滿了鉛。' },
+                    { text: '給他服用醫師開的鎮靜藥物，讓他強制休息。', impact: { patient: -10, dignity: 0, burden: 20 }, feedback: '家裡安靜了，你看著藥罐，懷疑自己是在照顧他，還是在消滅他的意識。' },
+                    { text: '與他爭執這是不合理的行為，試圖用邏輯喚醒他。', impact: { patient: -20, dignity: -10, burden: -15 }, feedback: '爭執引發了他的暴力傾向，你的手臂上多了一道深深的抓痕。' }
                 ]
             },
             {
@@ -277,63 +281,37 @@
             }
         ];
 
-        // 使用者第一次點擊頁面時啟動影片播放 (解決 Safari 等瀏覽器的限制)
-        function enableAudioOnFirstClick() {
-            if (state.userInteracted) return;
-            state.userInteracted = true;
-            const currentVideo = document.getElementById(state.activeVideoId);
-            currentVideo.play().catch(e => console.warn("Initial play triggered by interaction failed:", e));
-        }
-
         /**
-         * 無縫切換背景影片
+         * 切換背景圖片 (PNG 版本)
          */
         function changeBackground(name) {
-            const nextVideoId = state.activeVideoId === 'video-a' ? 'video-b' : 'video-a';
-            const currentVideo = document.getElementById(state.activeVideoId);
-            const nextVideo = document.getElementById(nextVideoId);
+            const nextImgId = state.activeImgId === 'bg-img-a' ? 'bg-img-b' : 'bg-img-a';
+            const currentImg = document.getElementById(state.activeImgId);
+            const nextImg = document.getElementById(nextImgId);
             
-            const vidPath = `./pic/${name}.mp4`;
+            // 將副檔名統一為 .png
+            const imgPath = `./pic/${name}.png`;
 
-            // 設定下一個影片並嘗試播放
-            nextVideo.src = vidPath;
-            nextVideo.muted = true; // 強制靜音以利自動播放
-            nextVideo.setAttribute('playsinline', '');
-            nextVideo.load();
-
-            // 使用 Promise 和事件確保載入順暢
-            nextVideo.oncanplay = function() {
-                nextVideo.play().then(() => {
-                    nextVideo.classList.add('active');
-                    currentVideo.classList.remove('active');
-                    state.activeVideoId = nextVideoId;
-                    nextVideo.oncanplay = null;
-                }).catch(err => {
-                    console.warn("Video play error caught:", err);
-                    // 如果播放失敗，可能是因為還沒觸發使用者互動，我們在背景準備好，等 userInteracted 為 true
-                    if (state.userInteracted) {
-                        nextVideo.classList.add('active');
-                        currentVideo.classList.remove('active');
-                        state.activeVideoId = nextVideoId;
-                    }
-                });
+            nextImg.src = imgPath;
+            nextImg.onload = function() {
+                nextImg.classList.add('active');
+                currentImg.classList.remove('active');
+                state.activeImgId = nextImgId;
             };
         }
 
+        /**
+         * 預載下一張圖以確保流暢
+         */
         function preloadNext(index) {
             const nextIdx = index + 1;
             let fileName = '';
-            if (nextIdx < scenarios.length) {
-                fileName = `scene${nextIdx + 1}`;
-            } else if (nextIdx === scenarios.length) {
-                fileName = 'ending';
-            }
+            if (nextIdx < scenarios.length) fileName = `scene${nextIdx + 1}`;
+            else if (nextIdx === scenarios.length) fileName = 'ending';
+            
             if (fileName) {
-                const link = document.createElement('link');
-                link.rel = 'preload';
-                link.as = 'video';
-                link.href = `./pic/${fileName}.mp4`;
-                document.head.appendChild(link);
+                const img = new Image();
+                img.src = `./pic/${fileName}.png`;
             }
         }
 
@@ -349,14 +327,12 @@
             if (name === 'game') {
                 document.getElementById('status-bar').classList.remove('hidden');
             }
-            window.scrollTo(0,0);
+            window.scrollTo(0, 0);
         }
 
         function startGame() {
             state.currentIdx = 0;
-            state.patient = 80;
-            state.dignity = 80;
-            state.burden = 80;
+            state.patient = 80; state.dignity = 80; state.burden = 80;
             refreshBars();
             showStage('game');
             loadScenario();
@@ -373,6 +349,7 @@
             const content = document.getElementById('game-content');
             content.style.opacity = '0';
             
+            // 背景圖片切換：對應 scene1.png, scene2.png ...
             changeBackground(`scene${state.currentIdx + 1}`);
             preloadNext(state.currentIdx);
 
@@ -389,9 +366,7 @@
                 optBox.appendChild(b);
             });
 
-            setTimeout(() => {
-                content.style.opacity = '1';
-            }, 500);
+            setTimeout(() => { content.style.opacity = '1'; }, 500);
         }
 
         function handleChoice(idx) {
@@ -422,7 +397,7 @@
                     changeBackground('ending');
                     document.getElementById('ending').classList.add('active');
                     document.getElementById('ending-title').innerText = "生命之火已燃盡";
-                    document.getElementById('ending-desc').innerHTML = "<p>在無盡的選擇中，你們都已筋疲力盡。<br>這不是你的錯，這是年輕型失智症家屬共有的困境。</p>";
+                    document.getElementById('ending-desc').innerHTML = "<p>在無盡的選擇中，你們都已筋疲力盡。<br>這不僅是體力的透支，更是靈魂的乾涸。</p>";
                 }, 800);
             }
         }
@@ -438,17 +413,14 @@
             changeBackground('ending');
             document.getElementById('ending-title').innerText = "漫長告別的開始";
             document.getElementById('ending-desc').innerHTML = `
-                <p>五個抉擇，僅是家屬生活中的幾秒鐘。</p>
-                <p>面對無法痊癒的疾病，我們需要的可能不只是選擇，<br>而是社會整體的恢復尊嚴與支持。</p>
+                <p>這些抉擇，只是數千個日夜中的冰山一角。</p>
+                <p>年輕型失智症帶走的，不只是記憶，更是那個原本正要發光發熱的人生。<br>希望社會能聽見這些沈默家屬的呼救。</p>
             `;
         }
 
         window.onload = () => {
-            const firstVid = document.getElementById('video-a');
-            firstVid.src = './pic/start.mp4';
-            firstVid.play().catch(e => {
-                console.log("Auto-play blocked, waiting for user click.");
-            });
+            const firstImg = document.getElementById('bg-img-a');
+            firstImg.src = './pic/start.png';
         };
     </script>
 </body>
