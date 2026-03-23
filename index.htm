@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>年輕型失智症：長夜的抉擇</title>
+    <title>年輕型失智症：該如何抉擇</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -62,6 +62,14 @@
             border-radius: 0.75rem;
             padding: 0.5rem;
             text-align: center;
+            transition: all 0.5s ease;
+        }
+
+        /* 警告狀態：爆表或瀕臨危險 */
+        .stat-warning {
+            border-color: rgba(239, 68, 68, 0.8);
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
+            background: rgba(127, 29, 29, 0.2);
         }
 
         .progress-container {
@@ -73,6 +81,16 @@
         }
 
         .bar { transition: width 1s ease; height: 100%; }
+
+        /* 閃爍動畫 */
+        .animate-pulse-fast {
+            animation: pulse-fast 0.6s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        @keyframes pulse-fast {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
 
         /* 遊戲排版優化 */
         .stage { 
@@ -141,10 +159,10 @@
         <img id="bg-img-b" class="bg-image" alt="">
     </div>
 
-    <!-- 增強型狀態面板 -->
+    <!-- 狀態面板 -->
     <div id="status-dashboard">
         <div class="max-w-lg mx-auto grid grid-cols-3 gap-2 px-2">
-            <div class="stat-card">
+            <div id="card-patient" class="stat-card">
                 <div class="flex justify-between items-center px-1">
                     <span class="text-[9px] font-bold text-blue-400">患者</span>
                     <span id="val-patient" class="text-[10px] text-white">80</span>
@@ -153,7 +171,7 @@
                     <div id="bar-patient" class="bar bg-blue-500" style="width: 80%"></div>
                 </div>
             </div>
-            <div class="stat-card">
+            <div id="card-dignity" class="stat-card">
                 <div class="flex justify-between items-center px-1">
                     <span class="text-[9px] font-bold text-stone-300">尊嚴</span>
                     <span id="val-dignity" class="text-[10px] text-white">80</span>
@@ -162,7 +180,7 @@
                     <div id="bar-dignity" class="bar bg-white" style="width: 80%"></div>
                 </div>
             </div>
-            <div class="stat-card">
+            <div id="card-burden" class="stat-card">
                 <div class="flex justify-between items-center px-1">
                     <span class="text-[9px] font-bold text-red-500">負荷</span>
                     <span id="val-burden" class="text-[10px] text-white">80</span>
@@ -247,11 +265,10 @@
     </div>
 
     <script>
-        // --- 核心邏輯與數據 ---
         const state = {
-            patient: 70,  // 患者健康/情緒
-            dignity: 70,  // 患者尊嚴
-            burden: 50,   // 家屬負荷 (0為輕鬆, 100為崩潰)
+            patient: 70,
+            dignity: 70,
+            burden: 50,
             currentIdx: 0,
             activeImgId: 'bg-img-a'
         };
@@ -285,12 +302,12 @@
                 ]
             },
             {
-                title: '失序的開銷',
-                desc: '你發現他偷偷在網路上訂了十幾台同樣的收音機，因為他每次看到廣告都忘記自己買過了。',
+                title: '失控的超市',
+                desc: '你接到超市電話：「是不會管好家人嗎？偷拆冰淇淋和餅乾吃也太誇張了吧！」你趕到時，他正被眾人圍觀，臉上掛著無辜又困惑的表情。',
                 options: [
-                    { text: '把東西退掉，並收走他的卡片和手機。', impact: { patient: -15, dignity: -30, burden: 15 }, feedback: '他開始變得很少出門，常坐在原地發呆。' },
-                    { text: '請家人或機構幫忙管理他的錢。', impact: { patient: -5, dignity: -15, burden: 20 }, feedback: '事情變得複雜，需要一直解釋狀況，也開始有外人介入你們的生活。' },
-                    { text: '不處理，東西留下來或送人。', impact: { patient: 5, dignity: 5, burden: 30 }, feedback: '他沒有察覺問題。只是你開始計算這樣還能撐多久。' }
+                    { text: '對工作人員鞠躬道歉，並沒收他的卡片手機。', impact: { patient: -15, dignity: -40, burden: 20 }, feedback: '衝突解決了，但他變得很怕出門，社會連結徹底斷裂。' },
+                    { text: '冷靜賠償，並製作「我生病了」小牌子讓他掛著。', impact: { patient: 5, dignity: -30, burden: 10 }, feedback: '超市理解了，但那塊牌子成了沈重的標籤。' },
+                    { text: '自己扛下責難，每天陪他逛街以防意外。', impact: { patient: 10, dignity: 15, burden: 40 }, feedback: '他的尊嚴完好無損，但你的私人時間已蕩然無存。' }
                 ]
             },
             {
@@ -312,8 +329,6 @@
                 ]
             }
         ];
-
-        // --- 功能函數 ---
 
         function changeBackground(fileName) {
             const nextImgId = state.activeImgId === 'bg-img-a' ? 'bg-img-b' : 'bg-img-a';
@@ -388,22 +403,42 @@
         }
 
         function updateStats() {
+            // 更新數值文字
             document.getElementById('val-patient').innerText = state.patient;
-            document.getElementById('bar-patient').style.width = state.patient + '%';
-            
             document.getElementById('val-dignity').innerText = state.dignity;
-            document.getElementById('bar-dignity').style.width = state.dignity + '%';
-            
             document.getElementById('val-burden').innerText = state.burden;
+
+            // 更新進度條寬度
+            document.getElementById('bar-patient').style.width = state.patient + '%';
+            document.getElementById('bar-dignity').style.width = state.dignity + '%';
             document.getElementById('bar-burden').style.width = state.burden + '%';
 
-            // 崩潰檢查
+            // 提示邏輯：接近危險值
+            handleStatIndicator('patient', state.patient < 25);
+            handleStatIndicator('dignity', state.dignity < 25);
+            handleStatIndicator('burden', state.burden > 80);
+
+            // 失敗判斷
             if (state.burden >= 100) {
                 triggerFail('burden');
             } else if (state.patient <= 0) {
                 triggerFail('patient');
             } else if (state.dignity <= 0) {
                 triggerFail('dignity');
+            }
+        }
+
+        // 處理能量條警告效果
+        function handleStatIndicator(type, isWarning) {
+            const card = document.getElementById(`card-${type}`);
+            const bar = document.getElementById(`bar-${type}`);
+            
+            if (isWarning) {
+                card.classList.add('stat-warning');
+                bar.classList.add('animate-pulse-fast');
+            } else {
+                card.classList.remove('stat-warning');
+                bar.classList.remove('animate-pulse-fast');
             }
         }
 
@@ -432,7 +467,6 @@
             const title = document.getElementById('ending-title');
             const desc = document.getElementById('ending-desc');
 
-            // 根據三個指數的相對值決定結局
             if (state.burden > state.patient && state.burden > state.dignity) {
                 title.innerText = "結局：守望者";
                 desc.innerHTML = `
@@ -449,7 +483,7 @@
                 title.innerText = "結局：共存";
                 desc.innerHTML = `
                     <p>你慢慢習慣現在的生活節奏。有些事情不再追問，有些時候就順著過。</p>
-                    <p><strong>患者狀態：${state.patient}%</strong> - 即使在迷霧中，你們依然牽著手。</p>
+                    <p><strong>患者狀態：${state.patient}%</strong> - 你們依然在一起。</p>
                 `;
             }
         }
