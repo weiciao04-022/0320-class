@@ -365,7 +365,7 @@
             const nextImgId = state.activeImgId === 'bg-img-a' ? 'bg-img-b' : 'bg-img-a';
             const currentImg = document.getElementById(state.activeImgId);
             const nextImg = document.getElementById(nextImgId);
-            const newSrc = `pic/${fileName}.png`;
+            const newSrc = `background/${fileName}.png`;
             
             const tempImg = new Image();
             tempImg.src = newSrc;
@@ -508,7 +508,7 @@
 
         window.onload = () => {
             const initialImg = document.getElementById('bg-img-a');
-            initialImg.src = 'pic/start.png';
+            initialImg.src = 'background/start.png';
             initialImg.classList.add('active');
         };
     </script>
